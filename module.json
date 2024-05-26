@@ -1,0 +1,27 @@
+{
+  "id": "roll-compendium",
+  "title": "Roll Compendium",
+  "version": "0.0.1",
+  "compatibility": {
+    "minimum": "11",
+    "verified": "11"
+  },
+  "relationships": {
+    "requires": [
+      {
+        "id": "lib-wrapper",
+        "type": "module",
+        "compatibility": {}
+      }
+    ]
+  },
+  "description": "A module that implicitly converts Compendiums into Rollable Tables",
+  "authors": [
+    {
+      "name": "KillerDiek",
+      "discord": "KillerDiek",
+      "flags": {}
+    }
+  ],
+  "url": "https://github.com/KillerDiek/roll-compendium"
+}
