@@ -6,15 +6,6 @@
     "minimum": "11",
     "verified": "11"
   },
-  "relationships": {
-    "requires": [
-      {
-        "id": "lib-wrapper",
-        "type": "module",
-        "compatibility": {}
-      }
-    ]
-  },
   "description": "A module that implicitly converts Compendiums into Rollable Tables",
   "authors": [
     {
@@ -23,5 +14,28 @@
       "flags": {}
     }
   ],
-  "url": "https://github.com/KillerDiek/roll-compendium"
+  "languages": [
+    {
+      "lang": "en",
+      "name": "English",
+      "path": "languages/en.json"
+    }
+  ],
+  "scripts": [
+    "scripts\\convert.js"
+  ],
+  "styles": [
+    "styles/main.css"
+  ],
+  "url": "https://github.com/KillerDiek/roll-compendium",
+  "settings": {
+    "roll-compendium.devMode": {
+      "name": "Developer Mode",
+      "hint": "Enable this to log additional debug information to the console.",
+      "scope": "client",
+      "config": true,
+      "type": "boolean",
+      "default": false
+    }
+  }
 }
