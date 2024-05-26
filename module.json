@@ -1,7 +1,7 @@
 {
   "id": "roll-compendium",
   "title": "Roll Compendium",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "compatibility": {
     "minimum": "11",
     "verified": "11"
