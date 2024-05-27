@@ -33,17 +33,16 @@ Hooks.on('renderRollTableDirectory', async (RollTableDirectory, html, css) => {
 async function openRollCompendiumDialog() {
     log("Opening Roll Compendium dialog...");
 
-    // Fetch all Compendiums and their contents
-    const packs = await Promise.all(game.packs.map(async p => ({
+    // Fetch all Compendiums metadata only (lazy loading content later)
+    const packs = game.packs.map(p => ({
         title: p.metadata.label,
-        collection: p.collection,
-        content: await p.getDocuments().then(docs => docs.sort((a, b) => a.name.localeCompare(b.name)))
-    })));
+        collection: p.collection
+    }));
 
     // Sort packs alphabetically by title
     packs.sort((a, b) => a.title.localeCompare(b.title));
 
-    log("Fetched compendium packs: ", packs);
+    log("Fetched compendium metadata: ", packs);
 
     // Create dialog content
     let content = `
@@ -60,15 +59,8 @@ async function openRollCompendiumDialog() {
             <li class="compendium-folder">
                 <strong class="toggle-pack" data-pack="${pack.collection}" data-title="${pack.title}">+ ${pack.title}</strong>
                 <input type="checkbox" class="select-all-pack" data-pack="${pack.collection}">
-                <ul class="pack-entries" data-pack="${pack.collection}" style="display: none;">`;
-        
-        for (let item of pack.content) {
-            content += `<li>
-                <input type="checkbox" class="entry-checkbox" data-pack="${pack.collection}" data-id="${item.id}" data-name="${item.name}" data-img="${item.img}"> ${item.name}
+                <ul class="pack-entries" data-pack="${pack.collection}" style="display: none;"></ul>
             </li>`;
-        }
-        
-        content += `</ul></li>`;
     }
     
     content += `</ul></div>`;
@@ -82,6 +74,8 @@ async function openRollCompendiumDialog() {
                 label: 'Import',
                 callback: async (html) => {
                     let selectedEntries = [];
+                    let packsToLoad = new Set();
+                    
                     html.find('input:checked').each(function () {
                         if (this.dataset.name !== undefined) {
                             selectedEntries.push({
@@ -90,8 +84,29 @@ async function openRollCompendiumDialog() {
                                 name: this.dataset.name,
                                 img: this.dataset.img
                             });
+                        } else if (this.classList.contains('select-all-pack')) {
+                            packsToLoad.add(this.dataset.pack);
                         }
                     });
+
+                    // Load any packs that were not expanded but have their "select all" checked
+                    for (let pack of packsToLoad) {
+                        const packContent = await game.packs.get(pack).getDocuments();
+                        const sortedContent = packContent.sort((a, b) => a.name.localeCompare(b.name));
+                        log(`Loaded content for pack ${pack}: `, sortedContent);
+
+                        sortedContent.forEach(item => {
+                            if (!selectedEntries.find(entry => entry.id === item.id && entry.pack === pack)) {
+                                selectedEntries.push({
+                                    pack: pack,
+                                    id: item.id,
+                                    name: item.name,
+                                    img: item.img
+                                });
+                            }
+                        });
+                    }
+
                     const tableName = html.find('#table-name').val();
                     log("Selected entries to import: ", selectedEntries);
                     log("Table name: ", tableName);
@@ -117,9 +132,6 @@ async function openRollCompendiumDialog() {
                 const pack = $(event.currentTarget).data('pack');
                 const isChecked = $(event.currentTarget).prop('checked');
                 html.find(`.pack-entries[data-pack="${pack}"] input[type="checkbox"]`).prop('checked', isChecked);
-
-				const allCheckedOverall = html.find('.entry-checkbox:not(:checked)').length === 0;
-                $selectAll.prop('checked', allCheckedOverall);
             });
 
             html.find('.entry-checkbox').on('click', (event) => {
@@ -131,7 +143,7 @@ async function openRollCompendiumDialog() {
                 $selectAll.prop('checked', allCheckedOverall);
             });
 
-            html.find('.toggle-pack').on('click', (event) => {
+            html.find('.toggle-pack').on('click', async (event) => {
                 const pack = $(event.currentTarget).data('pack');
                 const title = $(event.currentTarget).data('title');
                 const $packEntries = html.find(`.pack-entries[data-pack="${pack}"]`);
@@ -141,6 +153,19 @@ async function openRollCompendiumDialog() {
                     $packEntries.hide();
                     $icon.text(`+ ${title}`);
                 } else {
+                    // Lazy load pack content if not already loaded
+                    if ($packEntries.is(':empty')) {
+                        log(`Loading content for pack ${pack}...`);
+                        const packContent = await game.packs.get(pack).getDocuments();
+                        const sortedContent = packContent.sort((a, b) => a.name.localeCompare(b.name));
+                        log(`Loaded content for pack ${pack}: `, sortedContent);
+
+                        for (let item of sortedContent) {
+                            $packEntries.append(`<li>
+                                <input type="checkbox" class="entry-checkbox" data-pack="${pack}" data-id="${item.id}" data-name="${item.name}" data-img="${item.img}"> ${item.name}
+                            </li>`);
+                        }
+                    }
                     $packEntries.show();
                     $icon.text(`- ${title}`);
                 }

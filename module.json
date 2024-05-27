@@ -1,7 +1,7 @@
 {
   "id": "roll-compendium",
   "title": "Roll Compendium",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "compatibility": {
     "minimum": "11",
     "verified": "11"
@@ -29,7 +29,7 @@
   ],
   "url": "https://github.com/KillerDiek/roll-compendium",
   "manifest": "https://raw.githubusercontent.com/KillerDiek/roll-compendium/main/module.json",
-  "download": "https://github.com/KillerDiek/roll-compendium/releases/download/v0.2.0/roll-compendium-v0.2.0.zip",
+  "download": "https://github.com/KillerDiek/roll-compendium/releases/download/v0.3.0/roll-compendium-v0.3.0.zip",
   "settings": {
     "roll-compendium.devMode": {
       "name": "Developer Mode",
