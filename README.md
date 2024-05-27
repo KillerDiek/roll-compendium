@@ -5,8 +5,6 @@ Roll Compendium is a Foundry VTT module designed to simplify the process for cre
 ## Usage
 
 Roll Compendium will create a new button in the header section of the Roll Tables Directory, from there, usage is as simple as clicking the button and selecting which Compendiums/Items to import and clicking import.
-
-#### Warning: As of now, Roll Compendium is rather computationally intensive. No, you're computer did not break, hopefully. Optimizations are coming but for now the current version works.
 ## Installation
 
 Copy and paste the following Manifest URL into the Manifest URL entry box in Foundry:
